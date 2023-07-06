@@ -7,6 +7,19 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Label Content="Menu" HorizontalAlignment="Left" Height="30" Margin="112,101,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Content="Novo pedido" HorizontalAlignment="Left" Height="30" Margin="112,137,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Content="Editar pedido" HorizontalAlignment="Left" Height="30" Margin="112,172,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Content="Excluir pedido" HorizontalAlignment="Left" Height="30" Margin="112,207,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Content="Pratos e bebidas" HorizontalAlignment="Left" Height="30" Margin="112,285,0,0" VerticalAlignment="Top" Width="130"/>
+
+        <Label Content="Pedidos:" HorizontalAlignment="Left" Height="30" Margin="313,44,0,0" VerticalAlignment="Top" Width="130"/>
+        <ListView HorizontalAlignment="Left" Height="282" Margin="315,82,0,0" VerticalAlignment="Top" Width="378" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
