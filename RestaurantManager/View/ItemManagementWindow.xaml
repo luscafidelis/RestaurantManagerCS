@@ -1,0 +1,26 @@
+﻿<Window x:Class="RestaurantManager.ItemManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RestaurantManager"
+        mc:Ignorable="d"
+        Title="Gerenciar cardapio" Height="450" Width="800">
+    <Grid>
+        <Label Content="Pratos e bebidas" HorizontalAlignment="Left" Height="30" Margin="112,101,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Command="{Binding CreateItem}" Content="Novo Item" HorizontalAlignment="Left" Height="30" Margin="112,137,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Command="{Binding UpdateItem}" Content="Editar Item" HorizontalAlignment="Left" Height="30" Margin="112,172,0,0" VerticalAlignment="Top" Width="130"/>
+        <Button Command="{Binding RemoveItem}" Content="Excluir Item" HorizontalAlignment="Left" Height="30" Margin="112,207,0,0" VerticalAlignment="Top" Width="130"/>
+
+        <Label Content="Itens disponíveis:" HorizontalAlignment="Left" Height="30" Margin="313,44,0,0" VerticalAlignment="Top" Width="130"/>
+        <ListView ItemsSource="{Binding ItemList}" SelectedItem="{Binding SelectedItem}" HorizontalAlignment="Left" Height="282" Margin="315,82,0,0" VerticalAlignment="Top" Width="456" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Nome" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Descrição" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="Preço" DisplayMemberBinding="{Binding Price}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

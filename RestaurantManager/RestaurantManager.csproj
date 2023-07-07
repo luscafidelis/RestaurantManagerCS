@@ -55,7 +55,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="ItemSelectionWindow.xaml">
+    <Page Include="View\ItemForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ItemManagementWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -67,20 +71,29 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ItemSelectionWindow.xaml.cs">
-      <DependentUpon>ItemSelectionWindow.xaml</DependentUpon>
+    <Compile Include="CustomDataContext.cs" />
+    <Compile Include="OrderManagerVM.cs" />
+    <Compile Include="Model\Item.cs" />
+    <Compile Include="Model\Order.cs" />
+    <Compile Include="RelayCommand.cs" />
+    <Compile Include="ViewModel\ItemManagementVM.cs" />
+    <Compile Include="View\ItemForm.xaml.cs">
+      <DependentUpon>ItemForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ItemManagementWindow.xaml.cs">
+      <DependentUpon>ItemManagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="OrderForm.xaml">
+    <Page Include="View\OrderForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OrderForm.xaml.cs">
+    <Compile Include="View\OrderForm.xaml.cs">
       <DependentUpon>OrderForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -108,5 +121,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

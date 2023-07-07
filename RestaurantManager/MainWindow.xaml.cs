@@ -19,6 +19,7 @@ namespace RestaurantManager {
     /// </summary>
     public partial class MainWindow : Window {
         public MainWindow() {
+            DataContext = new OrderManagerVM();
             InitializeComponent();
         }
     }

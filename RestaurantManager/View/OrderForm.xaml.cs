@@ -14,11 +14,15 @@ using System.Windows.Shapes;
 
 namespace RestaurantManager {
     /// <summary>
-    /// Lógica interna para ItemSelectionView.xaml
+    /// Lógica interna para OrderForm.xaml
     /// </summary>
-    public partial class ItemSelectionView : Window {
-        public ItemSelectionView() {
+    public partial class OrderForm : Window {
+        public OrderForm() {
             InitializeComponent();
+        }
+
+        public void btn_Save(object sender, RoutedEventArgs e) {
+            DialogResult = true;
         }
     }
 }
