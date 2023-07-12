@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Xml.Linq;
@@ -15,6 +16,7 @@ namespace RestaurantManager.Model {
         private ObservableCollection<Item> items;
         private double total;
         private int table;
+        private int id;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -23,11 +25,12 @@ namespace RestaurantManager.Model {
             items = new ObservableCollection<Item>();
             total = 0;
         }
-        public Order(string customer, ObservableCollection<Item> items, double total, int table) {
+        public Order(string customer, ObservableCollection<Item> items, double total, int table, int id) {
             this.customer = customer;
             this.items = items;
             this.total = total;
             this.table = table;
+            this.id = id;
         }
 
         //Getters & Setters
@@ -47,6 +50,10 @@ namespace RestaurantManager.Model {
             get { return table; }
             set { table = value; Notify("Table"); }
         }
+        public int Id {
+            get { return id; }
+            set { id = value; Notify("Id"); }
+        }
 
         //Functions
         public void AddItem(Item newItem) {
@@ -56,7 +63,7 @@ namespace RestaurantManager.Model {
             else
                 TargetItem.Quantity = TargetItem.Quantity + 1;
 
-            this.total += newItem.Price;
+            this.total += newItem.Price*newItem.Quantity;
             Notify("Items");
         }
 
@@ -84,8 +91,7 @@ namespace RestaurantManager.Model {
             try {
                 Item TargetItem = Items.Where(x => x.Name.Equals(Query)).First();
                 return TargetItem;
-            }catch (Exception ex) {
-                Console.WriteLine("Opa A");
+            }catch (Exception _) {
                 return null;
             }
             

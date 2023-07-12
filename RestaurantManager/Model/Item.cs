@@ -12,17 +12,19 @@ namespace RestaurantManager.Model {
         private string category;
         private double price;
         private int quantity;
+        private int id;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         //Costructors
         public Item() { }
-        public Item (string name, string description, string category, double price, int quantity) {
+        public Item (string name, string description, string category, double price, int quantity, int id) {
             this.name = name;
             this.description = description;
             this.category = category;
             this.price = price;
             this.quantity = quantity;
+            this.id = id;
         }
 
         //Getters & Setters
@@ -46,6 +48,10 @@ namespace RestaurantManager.Model {
             get { return quantity; }
             set { quantity = value; Notify("Quantity"); }
         }
+        public int Id {
+            get { return id; }
+            set { id = value; Notify("Id"); }
+        }
 
         //Functions
         public Item ShallowCopy() {
@@ -57,6 +63,7 @@ namespace RestaurantManager.Model {
             this.Category = NewItem.Category;
             this.Name = NewItem.Name;
             this.Quantity = NewItem.Quantity;
+            this.Id = NewItem.Id;
         }
 
         private void Notify(string name) {

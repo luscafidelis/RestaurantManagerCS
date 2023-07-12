@@ -1,16 +1,19 @@
-﻿using RestaurantManager.Model;
+﻿using RestaurantManager.Interface;
+using RestaurantManager.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace RestaurantManager.ViewModel {
     public class ItemManagementVM {
         public ObservableCollection<Item> ItemList { get; private set; }
         private Item selectedItem;
+        private IDatabase database;
 
         //Commands
         public ICommand CreateItem { get; private set; }
@@ -18,8 +21,10 @@ namespace RestaurantManager.ViewModel {
         public ICommand UpdateItem { get; private set; }
 
         //Constructor
-        public ItemManagementVM(ObservableCollection<Item> ItemList) {
-            this.ItemList = ItemList;
+        public ItemManagementVM(IDatabase database) {
+            this.database = database;
+            this.ItemList = database.ListItems();
+
             InitCommands();
         }
 
@@ -40,14 +45,16 @@ namespace RestaurantManager.ViewModel {
                 ItemForm.DataContext = Item;
 
                 if (ItemForm.ShowDialog().Equals(true)) {
-                    ItemList.Add(Item);
+                    database.CreateItem(Item);
+                    UpdateItemList();
                 }
             });
 
             //Delete an existing Item
             this.RemoveItem = new RelayCommand((object param) => {
                 if(SelectedItem != null) {
-                   ItemList.Remove(SelectedItem);
+                    database.DeleteItem(SelectedItem);
+                    UpdateItemList();
                 }               
             });
 
@@ -63,9 +70,18 @@ namespace RestaurantManager.ViewModel {
 
                     if (updateForm.ShowDialog().Equals(true)) {
                         SelectedItem.Update(EditableCopy);
+                        database.UpdateItem(EditableCopy);
                     }
                 }
             });
+        }
+
+        private void UpdateItemList() {
+            ItemList.Clear();
+
+            foreach (Item item in database.ListItems()) {
+                ItemList.Add(item);
+            }
         }
     }
 }

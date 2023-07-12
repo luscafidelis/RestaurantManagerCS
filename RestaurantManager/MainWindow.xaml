@@ -17,6 +17,7 @@
         <ListView ItemsSource="{Binding OrderList}" SelectedItem="{Binding SelectedOrder}" HorizontalAlignment="Left" Height="282" Margin="315,82,0,0" VerticalAlignment="Top" Width="378" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}"/>
                     <GridViewColumn Header="Mesa" DisplayMemberBinding="{Binding Table}" />
                     <GridViewColumn Header="Cliente" DisplayMemberBinding="{Binding Customer}" />
                     <GridViewColumn Header="Total (R$)" DisplayMemberBinding="{Binding Total}" />

@@ -16,6 +16,7 @@
         <ListView ItemsSource="{Binding ItemList}" SelectedItem="{Binding SelectedItem}" HorizontalAlignment="Left" Height="282" Margin="315,82,0,0" VerticalAlignment="Top" Width="456" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}"/>
                     <GridViewColumn Header="Nome" DisplayMemberBinding="{Binding Name}"/>
                     <GridViewColumn Header="Descrição" DisplayMemberBinding="{Binding Description}"/>
                     <GridViewColumn Header="Preço" DisplayMemberBinding="{Binding Price}"/>

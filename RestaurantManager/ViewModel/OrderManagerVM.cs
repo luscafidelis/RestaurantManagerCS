@@ -1,4 +1,6 @@
-﻿using RestaurantManager.Model;
+﻿using RestaurantManager.Datasource;
+using RestaurantManager.Interface;
+using RestaurantManager.Model;
 using RestaurantManager.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -15,10 +17,10 @@ namespace RestaurantManager {
     public class OrderManagerVM {
 
         public ObservableCollection<Order> OrderList { get; private set; }
-        public ObservableCollection<Item> ItemList { get; private set; }
-        public Item SelectedItem { get; private set; }
 
         private Order selectedOrder;
+
+        private IDatabase database;
 
         //Commands
         public ICommand CreateOrder { get; private set; }
@@ -29,24 +31,27 @@ namespace RestaurantManager {
 
         //Constructor
         public OrderManagerVM() {
-            this.OrderList = new ObservableCollection<Order>();
-            this.ItemList = new ObservableCollection<Item>();
 
-            ItemList.Add(new Item { 
-                Name = "Pizza de calabresa",
-                Description = "Pizza de calabresa",
-                Category = "Comida",
-                Price = 41.00,
-                Quantity = 1,
-            });
+            /**************************************** 
+                ItemList.Add(new Item { 
+                    Name = "Pizza de calabresa",
+                    Description = "Pizza de calabresa",
+                    Category = "Comida",
+                    Price = 41.00,
+                    Quantity = 1,
+                });
 
-            ItemList.Add(new Item {
-                Name = "Pizza de Frango",
-                Description = "Pizza de Frango",
-                Category = "Comida",
-                Price = 41.00,
-                Quantity = 1
-            });
+                ItemList.Add(new Item {
+                    Name = "Pizza de Frango",
+                    Description = "Pizza de Frango",
+                    Category = "Comida",
+                    Price = 41.00,
+                    Quantity = 1
+                }); 
+            **************************************/
+
+            database = new PgSqlDatabase();
+            this.OrderList = database.ListOrders();
 
             InitCommands();
         }
@@ -65,16 +70,19 @@ namespace RestaurantManager {
                 Order order = new Order();
 
                 OrderForm orderForm = new OrderForm();
-                orderForm.DataContext = new CreateOrderDataContext(order, ItemList);
+                orderForm.DataContext = new CreateOrderDataContext(order, database.ListItems());
 
                 if (orderForm.ShowDialog().Equals(true)) {
-                    OrderList.Add(order);
+                    database.CreateOrder(order);
+
+                    UpdateOrderList();
                 }
             });
 
             //Delete an existing order
             this.RemoveOrder = new RelayCommand((object param) => {
-                OrderList.Remove(SelectedOrder);
+                database.DeleteOrder(SelectedOrder);
+                UpdateOrderList();
             });
 
             //Update
@@ -82,9 +90,10 @@ namespace RestaurantManager {
                 OrderForm updateForm = new OrderForm();
                 Order EditableCopy = SelectedOrder.ShallowCopy();
 
-                updateForm.DataContext = new CreateOrderDataContext(EditableCopy, ItemList); ;
+                updateForm.DataContext = new CreateOrderDataContext(database.ReadOrder(EditableCopy), database.ListItems()); ;
                 
                 if (updateForm.ShowDialog().Equals(true)) {
+                    database.UpdateOrder(EditableCopy);
                     SelectedOrder.Update(EditableCopy);
                 }
             });
@@ -94,9 +103,17 @@ namespace RestaurantManager {
             //Open itens menu
             this.OpenItemManager = new RelayCommand((object param) => {
                 ItemManagementWindow itemManagementWindow = new ItemManagementWindow();
-                itemManagementWindow.DataContext = new ItemManagementVM(ItemList);
+                itemManagementWindow.DataContext = new ItemManagementVM(database);
                 itemManagementWindow.ShowDialog();
             });
+        }
+
+        private void UpdateOrderList() {
+            OrderList.Clear();
+            
+            foreach (Order order in database.ListOrders()) {
+                OrderList.Add(order);
+            }
         }
     }    
 }
