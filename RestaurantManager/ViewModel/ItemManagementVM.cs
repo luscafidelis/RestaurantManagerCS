@@ -11,8 +11,8 @@ using System.Windows.Input;
 
 namespace RestaurantManager.ViewModel {
     public class ItemManagementVM {
-        public ObservableCollection<Item> ItemList { get; private set; }
-        private Item selectedItem;
+        public ObservableCollection<IItem> ItemList { get; private set; }
+        private IItem selectedItem;
         private IDatabase database;
 
         //Commands
@@ -23,12 +23,12 @@ namespace RestaurantManager.ViewModel {
         //Constructor
         public ItemManagementVM(IDatabase database) {
             this.database = database;
-            this.ItemList = database.ListItems();
 
+            this.ItemList = this.database.ListItems();
             InitCommands();
         }
 
-        public Item SelectedItem {
+        public IItem SelectedItem {
             get { return selectedItem; }
             set { this.selectedItem = value; }
         }
@@ -64,7 +64,7 @@ namespace RestaurantManager.ViewModel {
             this.UpdateItem = new RelayCommand((object param) => {
                 if (SelectedItem != null) {
                     ItemForm updateForm = new ItemForm();
-                    Item EditableCopy = SelectedItem.ShallowCopy();
+                    IItem EditableCopy = SelectedItem.ShallowCopy();
 
                     updateForm.DataContext = EditableCopy;
 

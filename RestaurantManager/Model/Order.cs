@@ -11,9 +11,9 @@ using System.Windows.Documents;
 using System.Xml.Linq;
 
 namespace RestaurantManager.Model {
-    public class Order : INotifyPropertyChanged {
+    public class Order : INotifyPropertyChanged, IOrder {
         private string customer;
-        private ObservableCollection<Item> items;
+        private ObservableCollection<IItem> items;
         private double total;
         private int table;
         private int id;
@@ -22,10 +22,10 @@ namespace RestaurantManager.Model {
 
         public Order() {
             customer = string.Empty;
-            items = new ObservableCollection<Item>();
+            items = new ObservableCollection<IItem>();
             total = 0;
         }
-        public Order(string customer, ObservableCollection<Item> items, double total, int table, int id) {
+        public Order(string customer, ObservableCollection<IItem> items, double total, int table, int id) {
             this.customer = customer;
             this.items = items;
             this.total = total;
@@ -34,17 +34,17 @@ namespace RestaurantManager.Model {
         }
 
         //Getters & Setters
-        public string Customer{
+        public string Customer {
             get { return customer; }
-            set {  customer = value; Notify("Customer"); }
+            set { customer = value; Notify("Customer"); }
         }
-        public ObservableCollection<Item> Items {
+        public ObservableCollection<IItem> Items {
             get { return items; }
-            set { items = value; Notify("Items"); }  
+            set { items = value; Notify("IItems"); }
         }
-        public double Total { 
-            get { return total; } 
-            set { total = value; Notify("Total"); } 
+        public double Total {
+            get { return total; }
+            set { total = value; Notify("Total"); }
         }
         public int Table {
             get { return table; }
@@ -56,45 +56,42 @@ namespace RestaurantManager.Model {
         }
 
         //Functions
-        public void AddItem(Item newItem) {
-            Item TargetItem = Find(newItem.Name);
-            if (TargetItem == null)
+        public void AddItem(IItem newItem) {
+            IItem TargetIItem = Find(newItem.Name);
+            if (TargetIItem == null)
                 items.Add(newItem.ShallowCopy());
             else
-                TargetItem.Quantity = TargetItem.Quantity + 1;
+                TargetIItem.Quantity = TargetIItem.Quantity + 1;
 
-            this.total += newItem.Price*newItem.Quantity;
-            Notify("Items");
+            this.total += newItem.Price * newItem.Quantity;
+            Notify("IItems");
         }
 
-        public void RemoveItem(Item DeletedItem) {
-            if (DeletedItem.Quantity == 1)
-                items.Remove(DeletedItem);
+        public void RemoveItem(IItem DeletedIItem) {
+            if (DeletedIItem.Quantity == 1)
+                items.Remove(DeletedIItem);
             else
-                DeletedItem.Quantity = DeletedItem.Quantity - 1;
+                DeletedIItem.Quantity = DeletedIItem.Quantity - 1;
 
-            this.total -= DeletedItem.Price;
-            Notify("Items");
+            this.total -= DeletedIItem.Price;
+            Notify("IItems");
         }
 
-        public Order ShallowCopy() {
+        public IOrder ShallowCopy() {
             return (Order)this.MemberwiseClone();
         }
-        public void Update(Order NewOrder) {
+        public void Update(IOrder NewOrder) {
             this.Total = NewOrder.Total;
             this.Table = NewOrder.Table;
             this.Customer = NewOrder.Customer;
             this.Items = NewOrder.Items;
         }
 
-        public Item Find(string Query) {
+        public IItem Find(string Query) {
             try {
-                Item TargetItem = Items.Where(x => x.Name.Equals(Query)).First();
-                return TargetItem;
-            }catch (Exception _) {
-                return null;
-            }
-            
+                IItem TargetIItem = Items.Where(x => x.Name.Equals(Query)).First();
+                return TargetIItem;
+            } catch (Exception) { return null; }
         }
 
         private void Notify(string name) {

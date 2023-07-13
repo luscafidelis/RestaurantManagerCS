@@ -128,6 +128,8 @@
     <Compile Include="Datasource\PgSqlDatabase.cs" />
     <Compile Include="Interface\IDatabase.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="Interface\IItem.cs" />
+    <Compile Include="Interface\IOrder.cs" />
     <Compile Include="ViewModel\OrderManagerVM.cs" />
     <Compile Include="Model\Item.cs" />
     <Compile Include="Model\Order.cs" />

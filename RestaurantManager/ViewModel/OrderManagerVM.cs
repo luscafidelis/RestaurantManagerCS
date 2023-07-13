@@ -16,9 +16,9 @@ namespace RestaurantManager {
 
     public class OrderManagerVM {
 
-        public ObservableCollection<Order> OrderList { get; private set; }
+        public ObservableCollection<IOrder> OrderList { get; private set; }
 
-        private Order selectedOrder;
+        private IOrder selectedOrder;
 
         private IDatabase database;
 
@@ -30,7 +30,7 @@ namespace RestaurantManager {
         public ICommand AddItem { get; private set; }
 
         //Constructor
-        public OrderManagerVM() {
+        public OrderManagerVM(IDatabase database) {
 
             /**************************************** 
                 ItemList.Add(new Item { 
@@ -50,13 +50,13 @@ namespace RestaurantManager {
                 }); 
             **************************************/
 
-            database = new PgSqlDatabase();
-            this.OrderList = database.ListOrders();
+            this.database = database;
+            this.OrderList = this.database.ListOrders();
 
             InitCommands();
         }
 
-        public Order SelectedOrder {
+        public IOrder SelectedOrder {
             get { return selectedOrder; }
             set { this.selectedOrder = value; }
         }
@@ -88,7 +88,7 @@ namespace RestaurantManager {
             //Update
             this.UpdateOrder = new RelayCommand((object param) => {
                 OrderForm updateForm = new OrderForm();
-                Order EditableCopy = SelectedOrder.ShallowCopy();
+                IOrder EditableCopy = SelectedOrder.ShallowCopy();
 
                 updateForm.DataContext = new CreateOrderDataContext(database.ReadOrder(EditableCopy), database.ListItems()); ;
                 
@@ -111,7 +111,7 @@ namespace RestaurantManager {
         private void UpdateOrderList() {
             OrderList.Clear();
             
-            foreach (Order order in database.ListOrders()) {
+            foreach (IOrder order in database.ListOrders()) {
                 OrderList.Add(order);
             }
         }

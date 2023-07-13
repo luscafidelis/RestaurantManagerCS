@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestaurantManager.Datasource;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace RestaurantManager {
     /// </summary>
     public partial class MainWindow : Window {
         public MainWindow() {
-            DataContext = new OrderManagerVM();
+            DataContext = new OrderManagerVM(new PgSqlDatabase());
             InitializeComponent();
         }
     }

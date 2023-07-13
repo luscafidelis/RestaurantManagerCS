@@ -24,9 +24,9 @@ namespace RestaurantManager.Datasource {
         }
 
         //Orders requests
-        public ObservableCollection<Order> ListOrders() {
+        public ObservableCollection<IOrder> ListOrders() {
 
-            ObservableCollection<Order> orders = new ObservableCollection<Order>();
+            ObservableCollection<IOrder> orders = new ObservableCollection<IOrder>();
 
             string query = "SELECT * FROM Orders";
             DbCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
@@ -38,7 +38,7 @@ namespace RestaurantManager.Datasource {
 
                 while (DataReader.Read()) {
 
-                    Order order = new Order {
+                    IOrder order = new Order {
                         Id = DataReader.GetInt32(0),
                         Customer = DataReader.GetString(1),
                         Total = double.Parse(DataReader.GetValue(2).ToString(), NumberStyles.AllowCurrencySymbol | NumberStyles.Currency),
@@ -53,7 +53,7 @@ namespace RestaurantManager.Datasource {
             return orders;
         }
 
-        public void CreateOrder(Order order) {
+        public void CreateOrder(IOrder order) {
 
             StringBuilder query = new StringBuilder();
 
@@ -77,7 +77,7 @@ namespace RestaurantManager.Datasource {
             CreateOrderItem(order);
         }
 
-        public Order ReadOrder(Order order) {
+        public IOrder ReadOrder(IOrder order) {
 
             StringBuilder query = new StringBuilder();
 
@@ -97,7 +97,7 @@ namespace RestaurantManager.Datasource {
                 DbDataReader DataReader = command.ExecuteReader();
 
                 while (DataReader.Read()) {
-                    Item item = new Item {
+                    IItem item = new Item {
                         Id = DataReader.GetInt32(0),
                         Name = DataReader.GetString(1),
                         Description = DataReader.GetString(2),
@@ -113,7 +113,7 @@ namespace RestaurantManager.Datasource {
             return order;
         }
 
-        public void UpdateOrder(Order order) {
+        public void UpdateOrder(IOrder order) {
 
             StringBuilder query = new StringBuilder();
 
@@ -135,7 +135,7 @@ namespace RestaurantManager.Datasource {
             CreateOrderItem(order);
         }
 
-        public void DeleteOrder(Order order) {
+        public void DeleteOrder(IOrder order) {
 
             string query = "DELETE FROM Orders WHERE id = " + order.Id + ";";
             NpgsqlCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
@@ -147,7 +147,7 @@ namespace RestaurantManager.Datasource {
             } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
         }
 
-        private void AppendOrderParameters(NpgsqlCommand command, Order order) {
+        private void AppendOrderParameters(NpgsqlCommand command, IOrder order) {
             command.Parameters.AddWithValue("@Id", order.Id);
             command.Parameters.AddWithValue("@Customer", order.Customer);
             command.Parameters.AddWithValue("@Table", order.Table);
@@ -155,8 +155,8 @@ namespace RestaurantManager.Datasource {
             command.Parameters.AddWithValue("@Closed", false);
         }
 
-        //Order item requests
-        private void CreateOrderItem(Order order) {
+        //IOrder item requests
+        private void CreateOrderItem(IOrder order) {
 
             StringBuilder query = new StringBuilder();
 
@@ -164,17 +164,17 @@ namespace RestaurantManager.Datasource {
 
             try {
                 connection.Open();
-                foreach (Item item in order.Items) {
+                foreach (IItem item in order.Items) {
                     query.Clear();
 
                     query.Append("INSERT INTO OrderItem ");
                     query.Append("(item_id, order_id, quantity) ");
-                    query.Append("values (@Item, @Order, @Quantity) ");
+                    query.Append("values (@Item, @IOrder, @Quantity) ");
 
                     NpgsqlCommand command = new NpgsqlCommand(query.ToString(), (NpgsqlConnection)connection);
 
                     command.Parameters.AddWithValue("@Item", item.Id);
-                    command.Parameters.AddWithValue("@Order", order.Id);
+                    command.Parameters.AddWithValue("@IOrder", order.Id);
                     command.Parameters.AddWithValue("@Quantity", item.Quantity);
 
                     command.ExecuteNonQuery();
@@ -196,12 +196,12 @@ namespace RestaurantManager.Datasource {
         }
 
         //Itens requests
-        public ObservableCollection<Item> ListItems() {
+        public ObservableCollection<IItem> ListItems() {
 
             string query = "SELECT * FROM Item";
             DbCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
 
-            ObservableCollection<Item> AvaiableItems = new ObservableCollection<Item>();
+            ObservableCollection<IItem> AvaiableItems = new ObservableCollection<IItem>();
 
             try {
                 connection.Open();
@@ -209,7 +209,7 @@ namespace RestaurantManager.Datasource {
 
                 while (DataReader.Read()) {
 
-                    Item item = new Item {
+                    IItem item = new Item {
                         Id = DataReader.GetInt32(0),
                         Name = DataReader.GetString(1),
                         Description = DataReader.GetString(2),
@@ -226,7 +226,7 @@ namespace RestaurantManager.Datasource {
             return AvaiableItems;
         }
 
-        public void CreateItem(Item item) {
+        public void CreateItem(IItem item) {
 
             StringBuilder query = new StringBuilder();
 
@@ -247,7 +247,7 @@ namespace RestaurantManager.Datasource {
             } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
         }
 
-        public void UpdateItem(Item item) {
+        public void UpdateItem(IItem item) {
 
             StringBuilder query = new StringBuilder();
 
@@ -270,7 +270,7 @@ namespace RestaurantManager.Datasource {
             } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
         }
 
-        public void DeleteItem(Item item) {
+        public void DeleteItem(IItem item) {
 
             string query = "DELETE FROM Item WHERE id = " + item.Id + ";";
             DbCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
@@ -282,7 +282,7 @@ namespace RestaurantManager.Datasource {
             } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
         }
 
-        private void AppendItemParameters(NpgsqlCommand command, Item item) {
+        private void AppendItemParameters(NpgsqlCommand command, IItem item) {
             command.Parameters.AddWithValue("@Id", item.Id);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Description", item.Description);

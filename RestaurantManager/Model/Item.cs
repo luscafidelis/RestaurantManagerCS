@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantManager.Model {
-    public class Item : INotifyPropertyChanged {
+    public class Item : INotifyPropertyChanged, IItem {
         private string name;
         private string description;
         private string category;
@@ -18,7 +18,7 @@ namespace RestaurantManager.Model {
 
         //Costructors
         public Item() { }
-        public Item (string name, string description, string category, double price, int quantity, int id) {
+        public Item(string name, string description, string category, double price, int quantity, int id) {
             this.name = name;
             this.description = description;
             this.category = category;
@@ -54,10 +54,10 @@ namespace RestaurantManager.Model {
         }
 
         //Functions
-        public Item ShallowCopy() {
-            return (Item)this.MemberwiseClone();
+        public IItem ShallowCopy() {
+            return (Item) this.MemberwiseClone();
         }
-        public void Update(Item NewItem) {
+        public void Update(IItem NewItem) {
             this.Description = NewItem.Description;
             this.Price = NewItem.Price;
             this.Category = NewItem.Category;

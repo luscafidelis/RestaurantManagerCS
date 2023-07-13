@@ -10,14 +10,14 @@ using System.Windows.Input;
 namespace RestaurantManager {
     //Custom data contexts
     public class CreateOrderDataContext {
-        public Order Order { get; set; }
-        public ObservableCollection<Item> AvaiableItemList { get; set; }
+        public IOrder Order { get; set; }
+        public ObservableCollection<IItem> AvaiableItemList { get; set; }
         public ICommand AddItem { get; set; }
         public ICommand RemoveItem { get; set; }
-        public Item ItemFromMenu { get; set; }
-        public Item CanceledItem { get; set; }
+        public IItem ItemFromMenu { get; set; }
+        public IItem CanceledItem { get; set; }
 
-        public CreateOrderDataContext(Order order, ObservableCollection<Item> ItemList) {
+        public CreateOrderDataContext(IOrder order, ObservableCollection<IItem> ItemList) {
             Order = order;
             AvaiableItemList = ItemList;
 
