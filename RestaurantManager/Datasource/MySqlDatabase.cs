@@ -21,7 +21,7 @@ namespace RestaurantManager {
         
         public MySqlDatabase() {
             
-            string connectionString = "Host=localhost;Username=root;Password=root;Database=restaurantmanager;Port=52804;";
+            string connectionString = "Host=localhost;Username=root;Password=root;Database=restaurantmanager;Port=3306;";
             
             connection = new MySqlConnection(connectionString);
         }
@@ -34,7 +34,7 @@ namespace RestaurantManager {
             string query = "SELECT * FROM Orders";
             DbCommand command = new MySqlCommand(query, (MySqlConnection) connection);
 
-            try {
+            
                 connection.Open();
                 DbDataReader DataReader = command.ExecuteReader();
 
@@ -51,7 +51,7 @@ namespace RestaurantManager {
                 }
 
                 connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            
 
             return  orders;
         }
@@ -70,24 +70,22 @@ namespace RestaurantManager {
 
             order.Items.Clear();
             order.Total = 0;
+            
+            connection.Open();
+            DbDataReader DataReader = command.ExecuteReader();
 
-            try {
-                connection.Open();
-                DbDataReader DataReader = command.ExecuteReader();
+            while (DataReader.Read()) {
+                IItem item = new Item {
+                    Id = DataReader.GetInt32(0),
+                    Name = DataReader.GetString(1),
+                    Description = DataReader.GetString(2),
+                    Price = double.Parse(DataReader.GetValue(3).ToString(), NumberStyles.AllowCurrencySymbol | NumberStyles.Currency),
+                    Quantity = DataReader.GetInt32(4)
+                };
 
-                while (DataReader.Read()) {
-                    IItem item = new Item {
-                        Id = DataReader.GetInt32(0),
-                        Name = DataReader.GetString(1),
-                        Description = DataReader.GetString(2),
-                        Price = double.Parse(DataReader.GetValue(3).ToString(), NumberStyles.AllowCurrencySymbol | NumberStyles.Currency),
-                        Quantity = DataReader.GetInt32(4)
-                    };
-
-                    order.AddItem(item);
-                }
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+                order.AddItem(item);
+            }
+            connection.Close();
 
             return order;
         }
@@ -96,12 +94,11 @@ namespace RestaurantManager {
 
             string query = "DELETE FROM Orders WHERE id = " + order.Id + ";";
             MySqlCommand command = new MySqlCommand(query, (MySqlConnection) connection);
-
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            
         }
 
         public void CreateOrder(IOrder order) {
@@ -115,14 +112,12 @@ namespace RestaurantManager {
             MySqlCommand command = new MySqlCommand(query.ToString(), (MySqlConnection) connection);
 
             AppendOrderParameters(command, order);
-
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                int newId = (int)command.LastInsertedId;
-                order.Id = newId;
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            
+            connection.Open();
+            command.ExecuteNonQuery();
+            int newId = (int)command.LastInsertedId;
+            order.Id = newId;
+            connection.Close();
 
             CreateOrderItem(order);
         }
@@ -140,12 +135,10 @@ namespace RestaurantManager {
             DbCommand command = new MySqlCommand(query.ToString(), (MySqlConnection) connection);
 
             AppendOrderParameters((MySqlCommand)command, order);
-
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
 
             CreateOrderItem(order);
         }
@@ -155,26 +148,25 @@ namespace RestaurantManager {
             StringBuilder query = new StringBuilder();
 
             DeleteOrderItem(order.Id);
+            
+            connection.Open();
+            foreach (IItem item in order.Items) {
+                query.Clear();
 
-            try {
-                connection.Open();
-                foreach (IItem item in order.Items) {
-                    query.Clear();
+                query.Append("INSERT INTO OrderItem ");
+                query.Append("(item_id, order_id, quantity) ");
+                query.Append("values (@Item, @IOrder, @Quantity) ");
 
-                    query.Append("INSERT INTO OrderItem ");
-                    query.Append("(item_id, order_id, quantity) ");
-                    query.Append("values (@Item, @IOrder, @Quantity) ");
+                MySqlCommand command = new MySqlCommand(query.ToString(), (MySqlConnection)connection);
 
-                    MySqlCommand command = new MySqlCommand(query.ToString(), (MySqlConnection)connection);
+                command.Parameters.AddWithValue("@Item", item.Id);
+                command.Parameters.AddWithValue("@IOrder", order.Id);
+                command.Parameters.AddWithValue("@Quantity", item.Quantity);
 
-                    command.Parameters.AddWithValue("@Item", item.Id);
-                    command.Parameters.AddWithValue("@IOrder", order.Id);
-                    command.Parameters.AddWithValue("@Quantity", item.Quantity);
-
-                    command.ExecuteNonQuery();
-                }
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+                command.ExecuteNonQuery();
+            }
+            connection.Close();
+            
         }
 
         private void DeleteOrderItem (int OrderID) {
@@ -182,11 +174,10 @@ namespace RestaurantManager {
             string query = "DELETE FROM OrderItem WHERE order_id = " + OrderID + ";";
             DbCommand command = new MySqlCommand(query, (MySqlConnection)connection);
 
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            
         }
 
         private void AppendOrderParameters(MySqlCommand command, IOrder order) {
@@ -205,26 +196,23 @@ namespace RestaurantManager {
 
             ObservableCollection<IItem> AvaiableItems = new ObservableCollection<IItem>();
 
-            try {
-                connection.Open();
-                DbDataReader DataReader = command.ExecuteReader();
+            connection.Open();
+            DbDataReader DataReader = command.ExecuteReader();
 
-                while (DataReader.Read()) {
+            while (DataReader.Read()) {
 
-                    IItem item = new Item {
-                        Id = DataReader.GetInt32(0),
-                        Name = DataReader.GetString(1),
-                        Description = DataReader.GetString(2),
-                        Price = double.Parse(DataReader.GetValue(3).ToString(), NumberStyles.AllowCurrencySymbol | NumberStyles.Currency),
-                        Quantity = 1
-                    };
+                IItem item = new Item {
+                    Id = DataReader.GetInt32(0),
+                    Name = DataReader.GetString(1),
+                    Description = DataReader.GetString(2),
+                    Price = double.Parse(DataReader.GetValue(3).ToString()),
+                    Quantity = 1
+                };
 
-                    AvaiableItems.Add(item);
-                }
+                AvaiableItems.Add(item);
+            }
 
-                connection.Close();
-
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            connection.Close();
 
             return AvaiableItems;
         }
@@ -241,11 +229,10 @@ namespace RestaurantManager {
 
             AppendItemParameters((MySqlCommand)command, item);
 
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            
         }
 
         public void UpdateItem(IItem item) {
@@ -262,11 +249,10 @@ namespace RestaurantManager {
 
             AppendItemParameters((MySqlCommand) command, item);
 
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            
         }
 
         public void DeleteItem(IItem item) {
@@ -274,12 +260,10 @@ namespace RestaurantManager {
             string query = "DELETE FROM Item WHERE id = " + item.Id + ";";
             DbCommand command = new MySqlCommand(query, (MySqlConnection)connection);
 
-
-            try {
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            
         }
 
         private void AppendItemParameters(MySqlCommand command, IItem item) {

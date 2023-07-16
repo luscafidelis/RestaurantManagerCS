@@ -43,18 +43,25 @@ namespace RestaurantManager.ViewModel {
 
                 ItemForm ItemForm = new ItemForm();
                 ItemForm.DataContext = Item;
-
-                if (ItemForm.ShowDialog().Equals(true)) {
-                    database.CreateItem(Item);
-                    UpdateItemList();
-                }
+                try {
+                    if (ItemForm.ShowDialog().Equals(true)) {
+                        database.CreateItem(Item);
+                        UpdateItemList();
+                    }
+                } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
             });
 
             //Delete an existing Item
             this.RemoveItem = new RelayCommand((object param) => {
                 if(SelectedItem != null) {
-                    database.DeleteItem(SelectedItem);
-                    UpdateItemList();
+
+                    try {
+
+                        database.DeleteItem(SelectedItem);
+                        UpdateItemList();
+
+                    } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+                    
                 }               
             });
 
@@ -69,8 +76,12 @@ namespace RestaurantManager.ViewModel {
                     updateForm.DataContext = EditableCopy;
 
                     if (updateForm.ShowDialog().Equals(true)) {
-                        SelectedItem.Update(EditableCopy);
-                        database.UpdateItem(EditableCopy);
+
+                        try {
+                            SelectedItem.Update(EditableCopy);
+                            database.UpdateItem(EditableCopy);
+                        } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
+
                     }
                 }
             });

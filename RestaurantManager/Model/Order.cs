@@ -25,13 +25,6 @@ namespace RestaurantManager.Model {
             items = new ObservableCollection<IItem>();
             total = 0;
         }
-        public Order(string customer, ObservableCollection<IItem> items, double total, int table, int id) {
-            this.customer = customer;
-            this.items = items;
-            this.total = total;
-            this.table = table;
-            this.id = id;
-        }
 
         //Getters & Setters
         public string Customer {

@@ -1,6 +1,7 @@
 ﻿using RestaurantManager.Datasource;
 using RestaurantManager.Interface;
 using RestaurantManager.Model;
+using RestaurantManager.Tests;
 using RestaurantManager.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -30,7 +32,7 @@ namespace RestaurantManager {
         public ICommand AddItem { get; private set; }
 
         //Constructor
-        public OrderManagerVM(IDatabase database) {
+        public OrderManagerVM() {
 
             /**************************************** 
                 ItemList.Add(new Item { 
@@ -50,7 +52,7 @@ namespace RestaurantManager {
                 }); 
             **************************************/
 
-            this.database = database;
+            this.database = new MockDatabase();
             this.OrderList = this.database.ListOrders();
 
             InitCommands();
@@ -65,36 +67,44 @@ namespace RestaurantManager {
         private void InitCommands() {
 
             //Add new order
+
             this.CreateOrder = new RelayCommand((object param) => {
-
+                
                 Order order = new Order();
-
                 OrderForm orderForm = new OrderForm();
-                orderForm.DataContext = new CreateOrderDataContext(order, database.ListItems());
 
-                if (orderForm.ShowDialog().Equals(true)) {
-                    database.CreateOrder(order);
+                try {
+                    orderForm.DataContext = new CreateOrderDataContext(order, database.ListItems());
 
-                    UpdateOrderList();
-                }
+                    if (orderForm.ShowDialog().Equals(true)) {
+                        database.CreateOrder(order);
+                        UpdateOrderList();
+                    }
+                } catch (Exception ex) { MessageBox.Show(ex.Message); }
             });
 
             //Delete an existing order
             this.RemoveOrder = new RelayCommand((object param) => {
-                database.DeleteOrder(SelectedOrder);
-                UpdateOrderList();
+                try {
+                    database.DeleteOrder(SelectedOrder);
+                    UpdateOrderList();
+                } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
             });
 
             //Update
             this.UpdateOrder = new RelayCommand((object param) => {
                 OrderForm updateForm = new OrderForm();
-                IOrder EditableCopy = SelectedOrder.ShallowCopy();
+                if (SelectedOrder != null) {
+                    IOrder EditableCopy = SelectedOrder.ShallowCopy();
 
-                updateForm.DataContext = new CreateOrderDataContext(database.ReadOrder(EditableCopy), database.ListItems()); ;
-                
-                if (updateForm.ShowDialog().Equals(true)) {
-                    database.UpdateOrder(EditableCopy);
-                    SelectedOrder.Update(EditableCopy);
+                    try { 
+                        updateForm.DataContext = new CreateOrderDataContext(database.ReadOrder(EditableCopy), database.ListItems()); ;
+
+                        if (updateForm.ShowDialog().Equals(true)) {
+                            SelectedOrder.Update(EditableCopy);
+                            database.UpdateOrder(EditableCopy);
+                        }
+                    } catch (Exception) { MessageBox.Show(Message.DatabaseError()); }
                 }
             });
 
