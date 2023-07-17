@@ -42,7 +42,8 @@ namespace RestaurantManager.Datasource {
                 IOrder order = new Order {
                     Id = DataReader.GetInt32(0),
                     Customer = DataReader.GetString(1),
-                    Total = double.Parse(DataReader.GetValue(2).ToString()),
+                    Total = double.Parse(DataReader.GetValue(2).ToString()
+                    ),
                     Table = DataReader.GetInt32(3),
                 };
 

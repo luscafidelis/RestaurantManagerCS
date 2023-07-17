@@ -1,7 +1,6 @@
 ﻿using RestaurantManager.Datasource;
 using RestaurantManager.Interface;
 using RestaurantManager.Model;
-using RestaurantManager.Tests;
 using RestaurantManager.ViewModel;
 using System;
 using System.Collections.Generic;

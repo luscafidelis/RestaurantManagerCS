@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace RestaurantManager.Tests {
+namespace RestaurantManager.Datasource {
     public class MockDatabase : IDatabase {
 
         private ObservableCollection<IItem> Items;
