@@ -44,6 +44,7 @@ namespace RestaurantManager.Test {
 
         [Test]
         public void GetOrderTotal() {
+
             Mock<IDatabase> Database = new Mock<IDatabase>();;
             IOrder order = new Order {Id = 1 };
 
@@ -75,7 +76,7 @@ namespace RestaurantManager.Test {
             order = Database.Object.ReadOrder(order);
             order.AddItem(item);
 
-            Assert.That(condition: order.Total.Equals(32 + (item.Quantity * item.Price)));
+            Assert.That(condition: order.Total.Equals(order.Total + (item.Quantity * item.Price))); ;//calcula o preço total do pedido
         }
     }
 }
