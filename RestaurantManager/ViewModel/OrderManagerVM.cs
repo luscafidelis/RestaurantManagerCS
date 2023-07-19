@@ -1,4 +1,5 @@
-﻿using RestaurantManager.Datasource;
+﻿using Npgsql;
+using RestaurantManager.Datasource;
 using RestaurantManager.Interface;
 using RestaurantManager.Model;
 using RestaurantManager.ViewModel;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +24,8 @@ namespace RestaurantManager {
         private IOrder selectedOrder;
 
         private IDatabase database;
+
+        private DbConnection connection = new NpgsqlConnection("Host = localhost; Username=postgres;Password=root;Database=restaurantmanager;Port=5455;");
 
         //Commands
         public ICommand CreateOrder { get; private set; }
@@ -51,8 +55,23 @@ namespace RestaurantManager {
                 }); 
             **************************************/
 
-            this.database = new MockDatabase();
-            this.OrderList = this.database.ListOrders();
+            this.database = new PgSqlDatabase((NpgsqlConnection)connection);
+            try {
+                this.OrderList = this.database.ListOrders();
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+            }
+
+            InitCommands();
+        }
+
+        public OrderManagerVM(IDatabase database) {
+            this.database = database;
+            try {
+                this.OrderList = this.database.ListOrders();
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+            }
 
             InitCommands();
         }

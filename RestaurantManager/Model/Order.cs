@@ -61,13 +61,17 @@ namespace RestaurantManager.Model {
         }
 
         public void RemoveItem(IItem DeletedIItem) {
-            if (DeletedIItem.Quantity == 1)
-                items.Remove(DeletedIItem);
-            else
-                DeletedIItem.Quantity = DeletedIItem.Quantity - 1;
+            
+            if (Find(DeletedIItem.Name) != null) {
+                if (DeletedIItem.Quantity == 1)
+                    items.Remove(DeletedIItem);
+                else
+                    DeletedIItem.Quantity = DeletedIItem.Quantity - 1;
 
-            this.total -= DeletedIItem.Price;
-            Notify("IItems");
+                this.total -= DeletedIItem.Price;
+                Notify("IItems");
+            }
+
         }
 
         public IOrder ShallowCopy() {

@@ -5,6 +5,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Linq;
@@ -17,12 +18,12 @@ using System.Windows;
 namespace RestaurantManager.Datasource {
     public class PgSqlDatabase : IDatabase {
 
-        private readonly DbConnection connection;
+        private readonly IDbConnection connection;
 
-        public PgSqlDatabase() {
+        public PgSqlDatabase(IDbConnection connection) {
 
-            string connectionString = "Host=localhost;Username=postgres;Password=root;Database=restaurantmanager;Port=5455;";
-            connection = new NpgsqlConnection(connectionString);
+            //string connectionString = "Host=localhost;Username=postgres;Password=root;Database=restaurantmanager;Port=5455;";
+            this.connection = connection;
 
         }
 
@@ -34,22 +35,26 @@ namespace RestaurantManager.Datasource {
             string query = "SELECT * FROM Orders";
             DbCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
 
-            connection.Open();
-            DbDataReader DataReader = command.ExecuteReader();
+            try { 
+            
+                connection.Open();
+                DbDataReader DataReader = command.ExecuteReader();
 
-            while (DataReader.Read()) {
+                while (DataReader.Read()) {
 
-                IOrder order = new Order {
-                    Id = DataReader.GetInt32(0),
-                    Customer = DataReader.GetString(1),
-                    Total = double.Parse(DataReader.GetValue(2).ToString()
-                    ),
-                    Table = DataReader.GetInt32(3),
-                };
+                    IOrder order = new Order {
+                        Id = DataReader.GetInt32(0),
+                        Customer = DataReader.GetString(1),
+                        Total = double.Parse(DataReader.GetValue(2).ToString()),
+                        Table = DataReader.GetInt32(3),
+                    };
 
-                orders.Add(order);
-            }
-            connection.Close();            
+                    orders.Add(order);
+                }
+
+            } catch (Exception) {
+                throw;
+            } finally { connection.Close(); }
 
             return orders;
         }
@@ -62,8 +67,8 @@ namespace RestaurantManager.Datasource {
             query.Append("(customer, total, table_order) ");
             query.Append("VALUES (@Customer,@Total,@Table ) RETURNING id;");
 
-            NpgsqlCommand command = new NpgsqlCommand(query.ToString(), (NpgsqlConnection)connection);
-            AppendParameters(command, order);
+            DbCommand command = new NpgsqlCommand(query.ToString(), (NpgsqlConnection)connection);
+            AppendParameters((NpgsqlCommand)command, order);
 
             
 
@@ -88,7 +93,7 @@ namespace RestaurantManager.Datasource {
             query.Append("Item.id = OrderItem.item_id ");
             query.Append("WHERE OrderItem.order_id = " + order.Id + ";");
 
-            NpgsqlCommand command = new NpgsqlCommand(query.ToString(), (NpgsqlConnection)connection);
+            DbCommand command = new NpgsqlCommand(query.ToString(), (NpgsqlConnection)connection);
 
             order.Items.Clear();
             order.Total = 0;
@@ -137,7 +142,7 @@ namespace RestaurantManager.Datasource {
         public void DeleteOrder(IOrder order) {
 
             string query = "DELETE FROM Orders WHERE id = " + order.Id + ";";
-            NpgsqlCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
+            DbCommand command = new NpgsqlCommand(query, (NpgsqlConnection)connection);
 
             connection.Open();
             command.ExecuteNonQuery();

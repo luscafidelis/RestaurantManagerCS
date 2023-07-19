@@ -28,7 +28,7 @@ namespace RestaurantManager.Model {
             set { description = value; Notify("Description"); }
         }
         public double Price {
-            get { return price; }
+            get { return price*quantity; }
             set { price = value; Notify("Price"); }
         }
         public int Quantity {
